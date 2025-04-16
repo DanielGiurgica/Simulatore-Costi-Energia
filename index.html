@@ -52,6 +52,7 @@
 <body>
 
   <div class="container">
+    <!-- Schermata di benvenuto -->
     <div class="section" id="welcomeScreen">
       <h2>Benvenuto nel Simulatore di Risparmio Energetico</h2>
       <button class="btn" onclick="startSimulation()">Inizia</button>
@@ -141,16 +142,19 @@
   </div>
 
   <script>
+    // Funzione per iniziare la simulazione
     function startSimulation() {
       document.getElementById('welcomeScreen').style.display = 'none';
       document.getElementById('userInput').style.display = 'block';
     }
 
+    // Funzione per passare alla schermata dei dati generali
     function getGeneralData() {
       document.getElementById('userInput').style.display = 'none';
       document.getElementById('generalData').style.display = 'block';
     }
 
+    // Funzione per calcolare i risultati
     function calculateResults() {
       const tipoUtente = document.getElementById('tipoUtente').value;
       const tipoBolletta = document.getElementById('tipoBolletta').value;
@@ -168,43 +172,4 @@
 
       // Calcolo dei costi per le diverse offerte
       let costoFlex = kWhConScarto * (punAttuale + spread) + costoCommercializzazione;
-      let costoLight = consumoAttuale <= 1500 ? 40 : 40 + (consumoAttuale - 1500) * 0.45;
-      let costoFull = consumoAttuale <= 2500 ? 60 : 60 + (consumoAttuale - 2500) * 0.35;
-      let costoMaxi = consumoAttuale <= 4000 ? 90 : 90 + (consumoAttuale - 4000) * 0.30;
-
-      // Aggiunta sovrapprezzo per Non Residente
-      if (tipoUtente === "Non Residente") {
-        costoFlex += 12;
-        costoLight += 12;
-        costoFull += 12;
-        costoMaxi += 12;
-      }
-
-      // Confronto dei costi per trovare l'offerta migliore
-      let miglioreOfferta, risparmio, risparmioAnnuale;
-      if (costoLight < costoFlex && costoLight < costoFull && costoLight < costoMaxi) {
-        miglioreOfferta = "Light";
-        risparmio = costoFlex - costoLight;
-        risparmioAnnuale = risparmio * 12;
-      } else if (costoFull < costoFlex && costoFull < costoLight && costoFull < costoMaxi) {
-        miglioreOfferta = "Full"; risparmio = costoFlex - costoFull; risparmioAnnuale = risparmio * 12; } else if (costoMaxi < costoFlex && costoMaxi < costoLight && costoMaxi < costoFull) { miglioreOfferta = "Maxi"; risparmio = costoFlex - costoMaxi; risparmioAnnuale = risparmio * 12; } else { miglioreOfferta = "Flex"; risparmio = 0; risparmioAnnuale = 0; }
-
-  // Visualizzazione risultati
-  document.getElementById('generalData').style.display = 'none';
-  document.getElementById('results').style.display = 'block';
-
-  document.getElementById('risultatiCalcolo').innerHTML = `Offerta scelta: ${miglioreOfferta}`;
-  document.getElementById('risparmioBollette').innerHTML = `Risparmio per bolletta: €${risparmio.toFixed(2)}`;
-  document.getElementById('risparmioAnnuale').innerHTML = `Risparmio annuale: €${risparmioAnnuale.toFixed(2)}`;
-
-  document.getElementById('costoKWhAttuale').innerHTML = `Costo per kWh attuale: €${(costoEnergia / consumoAttuale).toFixed(3)}`;
-  document.getElementById('costoKWhOfferta').innerHTML = `Costo per kWh con l'offerta scelta: €${(miglioreOfferta === "Flex" ? costoFlex / consumoAttuale : miglioreOfferta === "Light" ? costoLight / consumoAttuale : miglioreOfferta === "Full" ? costoFull / consumoAttuale : costoMaxi / consumoAttuale).toFixed(3)}`;
-
-  document.getElementById('formulaCalcolo').innerHTML = `Formula di calcolo: <br>
-    Costo attuale = (Consumo attuale x Prezzo energia) + Costi fissi <br>
-    Risparmio = Costo attuale - Costo con offerta scelta <br>
-    Risparmio annuo = Risparmio mensile x 12`;
-}
-</script> 
-</body> 
-</html> ```
+      let costoLight = consumoAttuale <= 1500 ? 40 : 40 + (consumoAttuale - 
