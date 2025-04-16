@@ -49,27 +49,37 @@
 </head>
 <body>
   <div class="container">
-    <h1>Simulatore Energia</h1>
-
-    <div class="input-group">
-      <label for="tipo_bolletta">Tipo di Bolletta</label>
-      <select id="tipo_bolletta">
-        <option value="mensile">Mensile</option>
-        <option value="bimestrale">Bimestrale</option>
-      </select>
+    <div id="intro">
+      <h1>Benvenuto nel Simulatore Energia</h1>
+      <button id="startBtn">Inizia</button>
     </div>
 
-    <div class="input-group">
-      <label for="tipo_utente">Tipo di Utente</label>
-      <select id="tipo_utente">
-        <option value="residente">Residente</option>
-        <option value="non_residente">Non Residente</option>
-        <option value="partita_iva">Partita IVA</option>
-      </select>
+    <div id="selection" class="hidden">
+      <h2>Seleziona il tipo di bolletta e utente</h2>
+
+      <div class="input-group">
+        <label for="tipo_bolletta">Tipo di Bolletta</label>
+        <select id="tipo_bolletta">
+          <option value="mensile">Mensile</option>
+          <option value="bimestrale">Bimestrale</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="tipo_utente">Tipo di Utente</label>
+        <select id="tipo_utente">
+          <option value="residente">Residente</option>
+          <option value="non_residente">Non Residente</option>
+          <option value="partita_iva">Partita IVA</option>
+        </select>
+      </div>
+
+      <button id="nextStep1">Avanti</button>
     </div>
 
-    <div id="form_data_generali" class="hidden">
-      <h2>Dati Generali</h2>
+    <div id="form_dati" class="hidden">
+      <h2>Inserisci i dati generali</h2>
+      
       <div class="input-group">
         <label for="costo_attuale">Costo Attuale Energia (€)</label>
         <input type="number" id="costo_attuale" />
@@ -82,65 +92,67 @@
         <label for="consumo_annuale">Consumo Annuale Attuale (kW)</label>
         <input type="number" id="consumo_annuale" />
       </div>
+
+      <div id="form_flex" class="hidden">
+        <h2>Inserisci i dati per il calcolo dell'offerta Flex</h2>
+        <div class="input-group">
+          <label for="pun">PUN della bolletta attuale</label>
+          <input type="number" id="pun" />
+        </div>
+        <div class="input-group">
+          <label for="spread_fastweb">Spread con Fastweb (€)</label>
+          <input type="number" id="spread_fastweb" />
+        </div>
+        <div class="input-group">
+          <label for="costo_commercializzazione_flex">Costo di Commercializzazione Fastweb</label>
+          <input type="number" id="costo_commercializzazione_flex" />
+        </div>
+      </div>
+
+      <div id="form_fix" class="hidden">
+        <h2>Inserisci i dati per il calcolo dell'offerta Fix</h2>
+        <div class="input-group">
+          <label for="pun_fisso">PUN Fisso Fastweb</label>
+          <input type="number" id="pun_fisso" />
+        </div>
+        <div class="input-group">
+          <label for="costo_commercializzazione_fix">Costo di Commercializzazione Fastweb</label>
+          <input type="number" id="costo_commercializzazione_fix" />
+        </div>
+      </div>
+
+      <button id="calcolaBtn">Calcola Risultati</button>
     </div>
 
-    <div id="form_offerta_flex" class="hidden">
-      <h2>Inserire i dati per il calcolo dell'offerta Flex</h2>
-      <div class="input-group">
-        <label for="pun">PUN della bolletta attuale</label>
-        <input type="number" id="pun" />
-      </div>
-      <div class="input-group">
-        <label for="spread_fastweb">Spread con Fastweb (€)</label>
-        <input type="number" id="spread_fastweb" />
-      </div>
-      <div class="input-group">
-        <label for="costo_commercializzazione_flex">Costo di Commercializzazione Fastweb</label>
-        <input type="number" id="costo_commercializzazione_flex" />
-      </div>
+    <div id="risultati" class="hidden">
+      <h2>Risultati della Simulazione</h2>
+      <p id="offerta_conveniente"></p>
     </div>
-
-    <div id="form_offerta_fix" class="hidden">
-      <h2>Inserire i dati per il calcolo dell'offerta Fix</h2>
-      <div class="input-group">
-        <label for="pun_fisso">PUN Fisso Fastweb</label>
-        <input type="number" id="pun_fisso" />
-      </div>
-      <div class="input-group">
-        <label for="costo_commercializzazione_fix">Costo di Commercializzazione Fastweb</label>
-        <input type="number" id="costo_commercializzazione_fix" />
-      </div>
-    </div>
-
-    <button onclick="calcola()">Calcola</button>
   </div>
 
   <script>
-    const tipoBolletta = document.getElementById("tipo_bolletta");
-    const tipoUtente = document.getElementById("tipo_utente");
+    const startBtn = document.getElementById("startBtn");
+    const nextStep1 = document.getElementById("nextStep1");
+    const calcolaBtn = document.getElementById("calcolaBtn");
 
-    const formDataGenerali = document.getElementById("form_data_generali");
-    const formOffertaFlex = document.getElementById("form_offerta_flex");
-    const formOffertaFix = document.getElementById("form_offerta_fix");
+    const intro = document.getElementById("intro");
+    const selection = document.getElementById("selection");
+    const formDati = document.getElementById("form_dati");
+    const formFlex = document.getElementById("form_flex");
+    const formFix = document.getElementById("form_fix");
+    const risultati = document.getElementById("risultati");
 
-    // Quando viene selezionato il tipo di bolletta e utente, mostra il form per inserire i dati generali
-    tipoBolletta.addEventListener("change", showForm);
-    tipoUtente.addEventListener("change", showForm);
+    startBtn.addEventListener("click", () => {
+      intro.classList.add("hidden");
+      selection.classList.remove("hidden");
+    });
 
-    function showForm() {
-      formDataGenerali.classList.remove("hidden");
-      formOffertaFlex.classList.remove("hidden");
-      formOffertaFix.classList.remove("hidden");
+    nextStep1.addEventListener("click", () => {
+      selection.classList.add("hidden");
+      formDati.classList.remove("hidden");
+    });
 
-      // Se bolletta è bimestrale, raddoppia il costo di commercializzazione
-      const isBimestrale = tipoBolletta.value === "bimestrale";
-      const costoCommercializzazioneFlex = document.getElementById("costo_commercializzazione_flex");
-      if (isBimestrale) {
-        costoCommercializzazioneFlex.value = (parseFloat(costoCommercializzazioneFlex.value) || 0) * 2;
-      }
-    }
-
-    function calcola() {
+    calcolaBtn.addEventListener("click", () => {
       const costoAttuale = parseFloat(document.getElementById("costo_attuale").value);
       const consumoAttuale = parseFloat(document.getElementById("consumo_attuale").value);
       const consumoAnnuale = parseFloat(document.getElementById("consumo_annuale").value);
@@ -152,14 +164,50 @@
       const punFisso = parseFloat(document.getElementById("pun_fisso").value);
       const costoCommercializzazioneFix = parseFloat(document.getElementById("costo_commercializzazione_fix").value);
 
-      // Simulazioni di calcolo (esempio)
-      const costoOffertaFlex = (costoAttuale * consumoAttuale * pun) + spreadFastweb + costoCommercializzazioneFlex;
-      const costoOffertaFix = (costoAttuale * consumoAttuale * punFisso) + costoCommercializzazioneFix;
+      // Calcolo Flex
+      const costoFlex = (consumoAttuale * pun) + spreadFastweb + costoCommercializzazioneFlex;
+      
+      // Calcolo Fix
+      const costoFix = (consumoAttuale * punFisso) + costoCommercializzazioneFix;
 
-      alert("Calcoli effettuati!\n" +
-            "Costo Offerta Flex: €" + costoOffertaFlex.toFixed(2) + "\n" +
-            "Costo Offerta Fix: €" + costoOffertaFix.toFixed(2));
-    }
+      // Calcolo Light (40€/mese, 1500kW limiti)
+      const lightBase = 40;
+      const lightExtraRate = 0.45;
+      const extraLight = consumoAnnuale > 1500 ? (consumoAnnuale - 1500) * lightExtraRate : 0;
+      const costoLight = lightBase + extraLight;
+
+      // Calcolo Full (60€/mese, 2500kW limiti)
+      const fullBase = 60;
+      const fullExtraRate = 0.45;
+      const extraFull = consumoAnnuale > 2500 ? (consumoAnnuale - 2500) * fullExtraRate : 0;
+      const costoFull = fullBase + extraFull;
+
+      // Calcolo Maxi (90€/mese, 4000kW limiti)
+      const maxiBase = 90;
+      const maxiExtraRate = 0.45;
+      const extraMaxi = consumoAnnuale > 4000 ? (consumoAnnuale - 4000) * maxiExtraRate : 0;
+      const costoMaxi = maxiBase + extraMaxi;
+
+      // Determinare l'offerta più conveniente
+      let offerta = "Nessuna offerta conveniente";
+      let minCosto = Math.min(costoFlex, costoFix, costoLight, costoFull, costoMaxi);
+      
+      if (minCosto === costoFlex) {
+        offerta = "Offerta Flex";
+      } else if (minCosto === costoFix) {
+        offerta = "Offerta Fix";
+      } else if (minCosto === costoLight) {
+        offerta = "Offerta Light";
+      } else if (minCosto === costoFull) {
+        offerta = "Offerta Full";
+      } else {
+        offerta = "Offerta Maxi";
+      }
+
+      document.getElementById("offerta_conveniente").textContent = `L'offerta più conveniente è: ${offerta}`;
+      formDati.classList.add("hidden");
+      risultati.classList.remove("hidden");
+    });
   </script>
 </body>
 </html>
