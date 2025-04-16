@@ -84,13 +84,13 @@
     
     <label for="costo-attuale">Costo Attuale Energia (€)</label>
     <input type="number" id="costo-attuale" required>
-    
+
     <label for="consumo-attuale">Consumo Attuale (kWh)</label>
     <input type="number" id="consumo-attuale" required>
-    
+
     <label for="consumo-annuale">Consumo Annuale Attuale (kWh)</label>
     <input type="number" id="consumo-annuale" required>
-    
+
     <button onclick="calcolaRisultato()">Calcola Offerte</button>
 </div>
 
@@ -99,13 +99,15 @@
     function passaFase() {
         const tipoBolletta = document.getElementById('tipo-bolletta').value;
         const tipoUtente = document.getElementById('tipo-utente').value;
-        
+
+        // Verifica se entrambi i campi sono selezionati
         if (tipoBolletta === '' || tipoUtente === '') {
             document.getElementById('errore').classList.remove('hidden');
         } else {
             // Nasconde la fase iniziale e mostra la fase 2
             document.getElementById('fase1').classList.add('hidden');
             document.getElementById('fase2').classList.remove('hidden');
+            document.getElementById('errore').classList.add('hidden');
         }
     }
 
@@ -115,8 +117,9 @@
         const consumoAttuale = parseFloat(document.getElementById('consumo-attuale').value);
         const consumoAnnuale = parseFloat(document.getElementById('consumo-annuale').value);
         
+        // Verifica che tutti i campi siano stati compilati
         if (isNaN(costoAttuale) || isNaN(consumoAttuale) || isNaN(consumoAnnuale)) {
-            alert("Per favore, inserisci valori validi.");
+            alert("Per favore, inserisci valori validi per tutti i campi.");
             return;
         }
 
