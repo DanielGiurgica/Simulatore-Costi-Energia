@@ -1,146 +1,174 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulatore Energia</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #fffbe6;
-      color: #333;
-      padding: 20px;
-    }
-    .hidden { display: none; }
-    .section { margin-bottom: 20px; }
-    button { padding: 10px 20px; background-color: #ffd700; border: none; cursor: pointer; }
-    input, select { padding: 5px; margin: 5px 0; width: 100%; }
-    .result { font-weight: bold; font-size: 1.2em; margin-top: 20px; background-color: #f0f0f0; padding: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulatore Offerta Energetica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .hidden {
+            display: none;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        label {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <div id="welcome">
-    <h1>Benvenuto nel simulatore</h1>
-    <button onclick="startSimulation()">Inizia</button>
-  </div>
+    <h1>Benvenuto nel Simulatore di Offerta Energetica</h1>
+    <button id="startBtn">Inizia</button>
 
-  <div id="form-section" class="hidden">
-    <div class="section">
-      <label>Tipo di Bolletta:</label>
-      <select id="bolletta">
-        <option value="mensile">Mensile</option>
-        <option value="bimestrale">Bimestrale</option>
-      </select>
+    <div id="selectionSection" class="hidden">
+        <label for="billType">Tipo di bolletta:</label>
+        <select id="billType">
+            <option value="mensile">Mensile</option>
+            <option value="bimestrale">Bimestrale</option>
+        </select>
 
-      <label>Tipo di Utente:</label>
-      <select id="utente">
-        <option value="residente">Residente</option>
-        <option value="non_residente">Non Residente</option>
-        <option value="partita_iva">Partita IVA</option>
-      </select>
+        <label for="userType">Tipo di utente:</label>
+        <select id="userType">
+            <option value="residente">Residente</option>
+            <option value="non_residente">Non Residente</option>
+            <option value="partita_iva">Partita IVA</option>
+        </select>
+
+        <label for="currentCost">Costo Attuale Energia (€):</label>
+        <input type="number" id="currentCost" required>
+
+        <label for="currentConsumption">Consumo Attuale (kWh):</label>
+        <input type="number" id="currentConsumption" required>
+
+        <label for="currentAnnualConsumption">Consumo Annuale Attuale (kWh):</label>
+        <input type="number" id="currentAnnualConsumption" required>
+
+        <div id="flexSection" class="hidden">
+            <h3>Inserisci i dati per il calcolo dell'offerta Flex</h3>
+            <label for="currentPUN">PUN della bolletta attuale:</label>
+            <input type="number" id="currentPUN" step="any" required>
+
+            <label for="spread">Spread con Fastweb (€):</label>
+            <input type="number" id="spread" step="any" required>
+
+            <label for="commercialCost">Costo di Commercializzazione Fastweb (€):</label>
+            <input type="number" id="commercialCost" required>
+        </div>
+
+        <div id="fixSection" class="hidden">
+            <h3>Inserisci i dati per il calcolo dell'offerta Fix</h3>
+            <label for="fixedPUN">PUN Fisso Fastweb:</label>
+            <input type="number" id="fixedPUN" step="any" required>
+
+            <label for="fixedCommercialCost">Costo di Commercializzazione Fastweb:</label>
+            <input type="number" id="fixedCommercialCost" required>
+        </div>
+
+        <button id="calculateBtn">Calcola</button>
     </div>
 
-    <div class="section">
-      <label>Costo Attuale Energia (€):</label>
-      <input type="number" id="costo-attuale">
-
-      <label>Consumo Attuale (kW):</label>
-      <input type="number" id="consumo-attuale">
-
-      <label>Consumo Annuale Attuale (kW):</label>
-      <input type="number" id="consumo-annuo">
+    <div id="resultSection" class="hidden">
+        <h3>Risultati della simulazione</h3>
+        <div id="resultDetails"></div>
     </div>
 
-    <div class="section">
-      <h3>Inserire i dati per il calcolo dell'offerta Flex</h3>
-      <label>PUN della bolletta attuale:</label>
-      <input type="number" id="pun-bolletta" step="0.01">
+    <script>
+        document.getElementById("startBtn").addEventListener("click", () => {
+            document.querySelector("h1").classList.add("hidden");
+            document.getElementById("startBtn").classList.add("hidden");
+            document.getElementById("selectionSection").classList.remove("hidden");
+        });
 
-      <label>Spread con Fastweb (€):</label>
-      <input type="number" id="spread" step="0.01">
+        document.getElementById("calculateBtn").addEventListener("click", () => {
+            const billType = document.getElementById("billType").value;
+            const userType = document.getElementById("userType").value;
+            const currentCost = parseFloat(document.getElementById("currentCost").value);
+            const currentConsumption = parseFloat(document.getElementById("currentConsumption").value);
+            const currentAnnualConsumption = parseFloat(document.getElementById("currentAnnualConsumption").value);
+            const currentPUN = parseFloat(document.getElementById("currentPUN").value);
+            const spread = parseFloat(document.getElementById("spread").value);
+            const commercialCost = parseFloat(document.getElementById("commercialCost").value);
+            const fixedPUN = parseFloat(document.getElementById("fixedPUN").value);
+            const fixedCommercialCost = parseFloat(document.getElementById("fixedCommercialCost").value);
 
-      <label>Costo di Commercializzazione Fastweb:</label>
-      <input type="number" id="com-flex">
-    </div>
+            // Aggiungere scarto del 10% sul consumo
+            const adjustedConsumption = currentConsumption * 1.10;
 
-    <div class="section">
-      <h3>Inserire i dati per il calcolo dell'offerta Fix</h3>
-      <label>PUN Fisso Fastweb:</label>
-      <input type="number" id="pun-fix" step="0.01">
+            // Aggiungere costo se utente "Non Residente"
+            const additionalCost = (userType === "non_residente") ? 12 : 0;
 
-      <label>Costo di Commercializzazione Fastweb:</label>
-      <input type="number" id="com-fix">
-    </div>
+            // Calcolare il prezzo al kWh attuale
+            const currentPricePerKWh = currentCost / currentConsumption;
 
-    <button onclick="calcola()">Calcola</button>
+            // Calcoli delle offerte
+            // Offerta Flex
+            const flexCost = (adjustedConsumption * (currentPUN + spread)) + commercialCost + additionalCost;
 
-    <div class="result" id="risultato"></div>
-  </div>
+            // Offerta Fix
+            const fixCost = (adjustedConsumption * fixedPUN) + fixedCommercialCost + additionalCost;
 
-  <script>
-    function startSimulation() {
-      document.getElementById("welcome").classList.add("hidden");
-      document.getElementById("form-section").classList.remove("hidden");
-    }
+            // Offerta Light
+            const lightBaseCost = (billType === "mensile") ? 40 : 80;
+            let lightCost = lightBaseCost * 12;
+            if (currentAnnualConsumption > 1500) {
+                const extraKWh = currentAnnualConsumption - 1500;
+                lightCost += extraKWh * 0.45;
+            }
 
-    function calcola() {
-      const bolletta = document.getElementById("bolletta").value;
-      const utente = document.getElementById("utente").value;
-      const mensile = bolletta === "mensile" ? 1 : 2;
+            // Offerta Full
+            const fullBaseCost = (billType === "mensile") ? 60 : 120;
+            let fullCost = fullBaseCost * 12;
+            if (currentAnnualConsumption > 2500) {
+                const extraKWh = currentAnnualConsumption - 2500;
+                fullCost += extraKWh * 0.45;
+            }
 
-      const costoAttuale = parseFloat(document.getElementById("costo-attuale").value);
-      const consumo = parseFloat(document.getElementById("consumo-attuale").value) * 1.1;
-      const consumoAnnuo = parseFloat(document.getElementById("consumo-annuo").value) * 1.1;
+            // Offerta Maxi
+            const maxiBaseCost = (billType === "mensile") ? 90 : 180;
+            let maxiCost = maxiBaseCost * 12;
+            if (currentAnnualConsumption > 4000) {
+                const extraKWh = currentAnnualConsumption - 4000;
+                maxiCost += extraKWh * 0.45;
+            }
 
-      const pun = parseFloat(document.getElementById("pun-bolletta").value);
-      const spread = parseFloat(document.getElementById("spread").value);
-      const punTotale = pun + spread;
-      let comFlex = parseFloat(document.getElementById("com-flex").value);
-      if (mensile === 2) comFlex *= 2;
+            // Determina l'offerta più conveniente
+            const allCosts = {
+                "Flex": flexCost,
+                "Fix": fixCost,
+                "Light": lightCost,
+                "Full": fullCost,
+                "Maxi": maxiCost
+            };
 
-      const punFix = parseFloat(document.getElementById("pun-fix").value);
-      let comFix = parseFloat(document.getElementById("com-fix").value);
-      if (mensile === 2) comFix *= 2;
+            const bestOffer = Object.keys(allCosts).reduce((a, b) => allCosts[a] < allCosts[b] ? a : b);
 
-      const sovrapprezzo = utente === "non_residente" ? 12 * mensile : 0;
+            // Mostra i risultati
+            let resultText = `
+                <p>Prezzo al kWh della bolletta attuale: ${currentPricePerKWh.toFixed(4)} €/kWh</p>
+                <p>L'offerta più conveniente è: <strong>${bestOffer}</strong></p>
+                <p>Motivo: </p>
+            `;
 
-      const costoFlex = (consumo * punTotale) + comFlex + sovrapprezzo;
-      const costoFix = (consumo * punFix) + comFix + sovrapprezzo;
+            // Motivazione per la scelta dell'offerta migliore
+            if (bestOffer === "Flex") {
+                resultText += `<p>La Flex conviene per il suo PUN variabile e la combinazione con lo spread e il costo di commercializzazione.</p>`;
+            } else if (bestOffer === "Fix") {
+                resultText += `<p>La Fix conviene per il suo PUN fisso che consente una previsione stabile dei costi.</p>`;
+            } else if (bestOffer === "Light") {
+                resultText += `<p>L'Offerta Light conviene perchè il consumo annuo dell'utente è basso e non supera i limiti, mantenendo il costo fisso a un prezzo conveniente.</p>`;
+            } else if (bestOffer === "Full") {
+                resultText += `<p>L'Offerta Full offre una buona combinazione di prezzo e consumo, ma solo per consumi più alti.</p>`;
+            } else {
+                resultText += `<p>L'Offerta Maxi conviene per consumi molto elevati, ma non è adatta a consumi più bassi come il tuo.</p>`;
+            }
 
-      const lightBase = 40 * mensile;
-      const fullBase = 60 * mensile;
-      const maxiBase = 90 * mensile;
-
-      const lightExtra = consumoAnnuo > 1500 ? (consumoAnnuo - 1500) * 0.45 : 0;
-      const fullExtra = consumoAnnuo > 2500 ? (consumoAnnuo - 2500) * 0.45 : 0;
-      const maxiExtra = consumoAnnuo > 4000 ? (consumoAnnuo - 4000) * 0.45 : 0;
-
-      const costoLight = lightBase + lightExtra + sovrapprezzo * 12;
-      const costoFull = fullBase + fullExtra + sovrapprezzo * 12;
-      const costoMaxi = maxiBase + maxiExtra + sovrapprezzo * 12;
-
-      const offerte = [
-        { nome: "Flex", costo: costoFlex },
-        { nome: "Fix", costo: costoFix },
-        { nome: "Light", costo: costoLight },
-        { nome: "Full", costo: costoFull },
-        { nome: "Maxi", costo: costoMaxi }
-      ];
-
-      offerte.sort((a, b) => a.costo - b.costo);
-      const migliore = offerte[0];
-
-      const risparmioBolletta = costoAttuale - migliore.costo;
-      const risparmioAnnuale = risparmioBolletta * (mensile === 1 ? 12 : 6);
-
-      const descrizione = `L'offerta più conveniente è <b>${migliore.nome}</b>.<br>
-        Risparmi circa <b>${risparmioBolletta.toFixed(2)}€</b> per bolletta e <b>${risparmioAnnuale.toFixed(2)}€</b> all'anno.<br>
-        Formula usata: ${(migliore.nome === "Flex") ? `(${consumo.toFixed(2)} × ${punTotale.toFixed(2)}) + ${comFlex} + ${sovrapprezzo}` :
-                       (migliore.nome === "Fix") ? `(${consumo.toFixed(2)} × ${punFix}) + ${comFix} + ${sovrapprezzo}` :
-                       `${mensile === 1 ? lightBase : (migliore.nome === "Full" ? fullBase : maxiBase)} + Sovrapprezzo + Extra`}$`;
-
-      document.getElementById("risultato").innerHTML = descrizione;
-    }
-  </script>
+            document.getElementById("resultDetails").innerHTML = resultText;
+            document.getElementById("selectionSection").classList.add("hidden");
+            document.getElementById("resultSection").classList.remove("hidden");
+        });
+    </script>
 </body>
 </html>
