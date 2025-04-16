@@ -5,194 +5,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulatore Energia</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; }
-        h1 { text-align: center; }
-        .hidden { display: none; }
-        .section { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; }
-        select, input { width: 100%; padding: 10px; margin: 5px 0; }
-        button { padding: 10px 15px; background-color: #2c3e50; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #34495e; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        p.error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="fase1">
     <h1>Benvenuto nel Simulatore Energia</h1>
+    <p>Per iniziare, seleziona il tipo di bolletta e il tipo di utente:</p>
 
-    <div id="welcome-section" class="section">
-        <p>Benvenuto nel simulatore. Clicca "Inizia" per cominciare.</p>
-        <button onclick="startSimulator()">Inizia</button>
-    </div>
+    <label for="tipo-bolletta">Tipo di Bolletta</label>
+    <select id="tipo-bolletta">
+        <option value="">Seleziona Tipo di Bolletta</option>
+        <option value="mensile">Mensile</option>
+        <option value="bimestrale">Bimestrale</option>
+    </select>
 
-    <div id="step1" class="section hidden">
-        <h2>Fase 1: Selezione Tipo Utente e Tipo di Bolletta</h2>
-        <label for="bill-type">Tipo di Bolletta:</label>
-        <select id="bill-type">
-            <option value="">Seleziona</option>
-            <option value="mensile">Mensile</option>
-            <option value="bimestrale">Bimestrale</option>
-        </select>
+    <label for="tipo-utente">Tipo di Utente</label>
+    <select id="tipo-utente">
+        <option value="">Seleziona Tipo di Utente</option>
+        <option value="residente">Residente</option>
+        <option value="non-residente">Non Residente</option>
+        <option value="partita-iva">Partita IVA</option>
+    </select>
 
-        <label for="user-type">Tipo di Utente:</label>
-        <select id="user-type">
-            <option value="">Seleziona</option>
-            <option value="residente">Residente</option>
-            <option value="non-residente">Non Residente</option>
-            <option value="partita-iva">Partita IVA</option>
-        </select>
-        
-        <button onclick="nextStep()">Prosegui</button>
-    </div>
+    <button id="prosegui" onclick="passaFase()">Prosegui</button>
+    <p id="errore" class="error hidden">Per favore, seleziona tutti i campi richiesti.</p>
+</div>
 
-    <div id="step2" class="section hidden">
-        <h2>Fase 2: Dati Generali</h2>
-        <label for="current-cost">Costo Attuale Energia (€):</label>
-        <input type="number" id="current-cost" placeholder="Inserisci costo attuale per kWh" />
-
-        <label for="current-consumption">Consumo Attuale (kWh):</label>
-        <input type="number" id="current-consumption" placeholder="Inserisci consumo attuale mensile" />
-
-        <label for="current-annual-consumption">Consumo Annuale Attuale (kWh):</label>
-        <input type="number" id="current-annual-consumption" placeholder="Inserisci consumo annuale" />
-
-        <button onclick="nextStep()">Prosegui</button>
-    </div>
-
-    <div id="step3" class="section hidden">
-        <h2>Fase 3: Calcolo Offerta Flex</h2>
-        <label for="spread-fastweb">Spread con Fastweb (€):</label>
-        <input type="number" id="spread-fastweb" placeholder="Inserisci spread Fastweb" />
-
-        <label for="fastweb-cost">Costo di Commercializzazione Fastweb (€):</label>
-        <input type="number" id="fastweb-cost" placeholder="Inserisci costo di commercializzazione" />
-
-        <button onclick="calculateResults()">Calcola Risultato</button>
-    </div>
-
-    <div id="results" class="section hidden">
-        <h2>Risultati</h2>
-        <p id="best-offer"></p>
-        <p id="savings"></p>
-        <p id="price-comparison"></p>
-    </div>
+<div class="container hidden" id="fase2">
+    <h1>Inserisci i Dati di Consumo</h1>
+    
+    <label for="costo-attuale">Costo Attuale Energia (€)</label>
+    <input type="number" id="costo-attuale" required>
+    
+    <label for="consumo-attuale">Consumo Attuale (kWh)</label>
+    <input type="number" id="consumo-attuale" required>
+    
+    <label for="consumo-annuale">Consumo Annuale Attuale (kWh)</label>
+    <input type="number" id="consumo-annuale" required>
+    
+    <button onclick="calcolaRisultato()">Calcola Offerte</button>
 </div>
 
 <script>
-    let billType, userType, currentCost, currentConsumption, currentAnnualConsumption, spreadFastweb, fastwebCost;
-
-    function startSimulator() {
-        document.getElementById("welcome-section").classList.add("hidden");
-        document.getElementById("step1").classList.remove("hidden");
-    }
-
-    function nextStep() {
-        if (document.getElementById("step1").classList.contains("hidden")) {
-            billType = document.getElementById("bill-type").value;
-            userType = document.getElementById("user-type").value;
-
-            if (!billType || !userType) {
-                alert("Seleziona tutte le opzioni obbligatorie!");
-                return;
-            }
-
-            document.getElementById("step1").classList.add("hidden");
-            document.getElementById("step2").classList.remove("hidden");
-        } else if (document.getElementById("step2").classList.contains("hidden")) {
-            currentCost = parseFloat(document.getElementById("current-cost").value);
-            currentConsumption = parseFloat(document.getElementById("current-consumption").value);
-            currentAnnualConsumption = parseFloat(document.getElementById("current-annual-consumption").value);
-
-            if (isNaN(currentCost) || isNaN(currentConsumption) || isNaN(currentAnnualConsumption)) {
-                alert("Inserisci tutti i valori richiesti!");
-                return;
-            }
-
-            document.getElementById("step2").classList.add("hidden");
-            document.getElementById("step3").classList.remove("hidden");
+    // Funzione per verificare se i campi obbligatori sono stati selezionati
+    function passaFase() {
+        const tipoBolletta = document.getElementById('tipo-bolletta').value;
+        const tipoUtente = document.getElementById('tipo-utente').value;
+        
+        if (tipoBolletta === '' || tipoUtente === '') {
+            document.getElementById('errore').classList.remove('hidden');
+        } else {
+            // Nasconde la fase iniziale e mostra la fase 2
+            document.getElementById('fase1').classList.add('hidden');
+            document.getElementById('fase2').classList.remove('hidden');
         }
     }
 
-    function calculateResults() {
-        spreadFastweb = parseFloat(document.getElementById("spread-fastweb").value);
-        fastwebCost = parseFloat(document.getElementById("fastweb-cost").value);
-
-        if (isNaN(spreadFastweb) || isNaN(fastwebCost)) {
-            alert("Inserisci tutti i valori per il calcolo!");
+    function calcolaRisultato() {
+        // Recupera i dati inseriti
+        const costoAttuale = parseFloat(document.getElementById('costo-attuale').value);
+        const consumoAttuale = parseFloat(document.getElementById('consumo-attuale').value);
+        const consumoAnnuale = parseFloat(document.getElementById('consumo-annuale').value);
+        
+        if (isNaN(costoAttuale) || isNaN(consumoAttuale) || isNaN(consumoAnnuale)) {
+            alert("Per favore, inserisci valori validi.");
             return;
         }
 
-        // Calcolo per l'offerta Flex
-        let flexCost = (currentConsumption * (currentCost + spreadFastweb)) + fastwebCost;
-        
-        // Calcolo per Offerta Light, Full, Maxi in base al consumo
-        let lightCost = 40; // Offerta Light
-        if (currentAnnualConsumption > 1500) {
-            lightCost += (currentAnnualConsumption - 1500) * 0.45; // Aggiunta del consumo in più
-        }
+        // Considera un margine di errore del 10% sui consumi
+        const consumoCorretto = consumoAttuale * 1.1;
 
-        let fullCost = 60; // Offerta Full
-        if (currentAnnualConsumption > 2500) {
-            fullCost += (currentAnnualConsumption - 2500) * 0.45; // Aggiunta del consumo in più
-        }
+        // Recupera i dati selezionati
+        const tipoBolletta = document.getElementById('tipo-bolletta').value;
+        const tipoUtente = document.getElementById('tipo-utente').value;
 
-        let maxiCost = 90; // Offerta Maxi
-        if (currentAnnualConsumption > 4000) {
-            maxiCost += (currentAnnualConsumption - 4000) * 0.45; // Aggiunta del consumo in più
-        }
+        // Costi di commercializzazione, moltiplicato per 2 se bimestrale
+        let costoCommercializzazione = (tipoBolletta === 'bimestrale') ? 2 : 1;
 
-        // Offerta Fix
-        let fixCost = (currentConsumption * currentCost) + fastwebCost;
+        // Aggiungi un costo extra di 12€/mese se Non Residente
+        let costoExtraNonResidente = (tipoUtente === 'non-residente') ? 12 : 0;
 
-        // Condizioni per non residenti
-        if (userType === "non-residente") {
-            lightCost += 12; // Aggiunta della quota per non residenti
-            fullCost += 12;
-            maxiCost += 12;
-            fixCost += 12;
-            flexCost += 12;
-        }
+        // Calcolo dei costi per ciascuna offerta
+        let costoFlex = (consumoCorretto * costoAttuale) + (costoCommercializzazione * 10) + costoExtraNonResidente;
+        let costoFix = (consumoCorretto * costoAttuale) + (costoCommercializzazione * 15) + costoExtraNonResidente;
 
-        // Gestione bimestrale (raddoppio dei costi di commercializzazione)
-        if (billType === "bimestrale") {
-            fastwebCost *= 2;
-            lightCost *= 2;
-            fullCost *= 2;
-            maxiCost *= 2;
-            fixCost *= 2;
-            flexCost *= 2;
-        }
+        // Costo per le offerte Light, Full e Maxi
+        let costoLight = 40 + (consumoAnnuale > 1500 ? (consumoAnnuale - 1500) * 0.45 : 0) + costoExtraNonResidente;
+        let costoFull = 60 + (consumoAnnuale > 2500 ? (consumoAnnuale - 2500) * 0.45 : 0) + costoExtraNonResidente;
+        let costoMaxi = 90 + (consumoAnnuale > 4000 ? (consumoAnnuale - 4000) * 0.45 : 0) + costoExtraNonResidente;
 
-        // Determinazione dell'offerta migliore
-        let bestOffer = "Offerta Flex: €" + flexCost.toFixed(2);
-        let bestCost = flexCost;
+        // Trova l'offerta più conveniente
+        let offerte = [
+            { nome: "Flex", costo: costoFlex },
+            { nome: "Fix", costo: costoFix },
+            { nome: "Light", costo: costoLight },
+            { nome: "Full", costo: costoFull },
+            { nome: "Maxi", costo: costoMaxi }
+        ];
 
-        if (fixCost < bestCost) {
-            bestOffer = "Offerta Fix: €" + fixCost.toFixed(2);
-            bestCost = fixCost;
-        }
-        if (lightCost < bestCost) {
-            bestOffer = "Offerta Light: €" + lightCost.toFixed(2);
-            bestCost = lightCost;
-        }
-        if (fullCost < bestCost) {
-            bestOffer = "Offerta Full: €" + fullCost.toFixed(2);
-            bestCost = fullCost;
-        }
-        if (maxiCost < bestCost) {
-            bestOffer = "Offerta Maxi: €" + maxiCost.toFixed(2);
-        }
+        let offertaConveniente = offerte.reduce((prev, curr) => (prev.costo < curr.costo ? prev : curr));
 
-        // Calcolo del risparmio
-        let savings = currentCost * currentConsumption - bestCost;
-
-        // Visualizzazione dei risultati
-        document.getElementById("step3").classList.add("hidden");
-        document.getElementById("results").classList.remove("hidden");
-        document.getElementById("best-offer").innerText = bestOffer;
-        document.getElementById("savings").innerText = "Risparmio mensile: €" + savings.toFixed(2);
-        document.getElementById("price-comparison").innerText = "Costo attuale: €" + (currentCost * currentConsumption).toFixed(2);
+        // Mostra il risultato
+        alert(`Offerta più conveniente: ${offertaConveniente.nome}\nCosto: €${offertaConveniente.costo.toFixed(2)}`);
     }
 </script>
 
