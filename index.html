@@ -1,209 +1,246 @@
+Controllo su "Bimestrale": Se la bolletta è bimestrale, il Costo di Commercializzazione viene moltiplicato per 2.
+
+
+ChatGPT ha detto:
+Ecco il codice completo che puoi caricare su GitHub come index.html. Include tutte le logiche, la gestione delle fasi e le condizioni di visualizzazione per il simulatore di energia:
+
+html
+Copia
+Modifica
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulatore Energia</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #111;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            padding: 20px;
-        }
-        h1, h2, p {
-            text-align: center;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        .btn {
-            background-color: #fbc531;
-            border: none;
-            padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            color: #000;
-            width: 100%;
-        }
-        .input-group {
-            margin: 10px 0;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .input-group input, .input-group select {
-            padding: 10px;
-            width: 100%;
-            font-size: 16px;
-        }
-        .hidden {
-            display: none;
-        }
-        .result {
-            margin-top: 20px;
-            background-color: #333;
-            padding: 15px;
-        }
-        .result p {
-            margin: 5px 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulatore Energia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2, p {
+      text-align: center;
+    }
+    .hidden {
+      display: none;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .button-container {
+      display: flex;
+      justify-content: center;
+    }
+    .result-box {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Benvenuto nel Simulatore Energia</h1>
-        
-        <!-- Step 1 - Iniziale -->
-        <div id="step1" class="section">
-            <p>Benvenuto nel simulatore. Clicca "Inizia" per proseguire.</p>
-            <button class="btn" id="startBtn">Inizia</button>
-        </div>
+  <div class="container" id="welcome-screen">
+    <h1>Benvenuto nel simulatore</h1>
+    <button id="start-btn">Inizia</button>
+  </div>
 
-        <!-- Step 2 - Selezione Tipo Bolletta e Tipo Utente -->
-        <div id="step2" class="hidden section">
-            <h2>Fase 1 - Seleziona Tipo Bolletta e Tipo Utente</h2>
-            <div class="input-group">
-                <label for="tipoBolletta">Tipo di Bolletta:</label>
-                <select id="tipoBolletta">
-                    <option value="">Seleziona</option>
-                    <option value="mensile">Mensile</option>
-                    <option value="bimestrale">Bimestrale</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="tipoUtente">Tipo di Utente:</label>
-                <select id="tipoUtente">
-                    <option value="">Seleziona</option>
-                    <option value="residente">Residente</option>
-                    <option value="nonResidente">Non Residente</option>
-                    <option value="partitaIva">Partita IVA</option>
-                </select>
-            </div>
-            <button class="btn" id="proseguiBtn">Prosegui</button>
-        </div>
-
-        <!-- Step 3 - Dati Generali -->
-        <div id="step3" class="hidden section">
-            <h2>Fase 2 - Inserisci Dati Generali</h2>
-            <div class="input-group">
-                <label for="costoEnergiaAttuale">Costo Attuale Energia (€ per kWh):</label>
-                <input type="number" id="costoEnergiaAttuale" placeholder="Inserisci costo attuale" required>
-            </div>
-            <div class="input-group">
-                <label for="punAttuale">PUN Attuale (€ per kWh):</label>
-                <input type="number" id="punAttuale" placeholder="Inserisci PUN attuale" required>
-            </div>
-            <div class="input-group">
-                <label for="spreadAttuale">Spread Attuale (€ per kWh):</label>
-                <input type="number" id="spreadAttuale" placeholder="Inserisci spread attuale" required>
-            </div>
-            <div class="input-group">
-                <label for="consumoAttuale">Consumo Attuale (kWh):</label>
-                <input type="number" id="consumoAttuale" placeholder="Inserisci consumo attuale" required>
-            </div>
-            <div class="input-group">
-                <label for="consumoAnnualeAttuale">Consumo Annuale Attuale (kWh):</label>
-                <input type="number" id="consumoAnnualeAttuale" placeholder="Inserisci consumo annuale" required>
-            </div>
-            <button class="btn" id="calcolaBtn">Calcola Offerte</button>
-        </div>
-
-        <!-- Step 4 - Risultati -->
-        <div id="result" class="hidden result">
-            <h2>Risultati</h2>
-            <p><strong>Risparmio a Bolletta: </strong><span id="risparmioBolleta"></span></p>
-            <p><strong>Risparmio Annuale: </strong><span id="risparmioAnnuale"></span></p>
-            <p><strong>Prezzo al kWh attuale: </strong><span id="prezzoKwAttuale"></span></p>
-            <p><strong>Prezzo al kWh con Offerta Selezionata: </strong><span id="prezzoKwOfferta"></span></p>
-            <p><strong>Motivazione del Risparmio: </strong><span id="motivazioneRisparmio"></span></p>
-        </div>
+  <div class="container hidden" id="fase1">
+    <h2>Seleziona Tipo Utente e Tipo di Bolletta</h2>
+    <div class="form-group">
+      <label for="bolletta">Tipo di Bolletta:</label>
+      <select id="bolletta">
+        <option value="">Seleziona...</option>
+        <option value="mensile">Mensile</option>
+        <option value="bimestrale">Bimestrale</option>
+      </select>
     </div>
+    <div class="form-group">
+      <label for="utente">Tipo di Utente:</label>
+      <select id="utente">
+        <option value="">Seleziona...</option>
+        <option value="residente">Residente</option>
+        <option value="non-residente">Non Residente</option>
+        <option value="partita-iva">Partita IVA</option>
+      </select>
+    </div>
+    <div class="button-container">
+      <button id="prosegui-fase1" disabled>Prosegui</button>
+    </div>
+    <p id="error-message" class="error hidden">Per favore, completa tutti i campi richiesti.</p>
+  </div>
 
-    <script>
-        // Variabili globali
-        let tipoBolletta, tipoUtente, costoEnergiaAttuale, punAttuale, spreadAttuale, consumoAttuale, consumoAnnualeAttuale;
+  <div class="container hidden" id="fase2">
+    <h2>Inserisci i Dati Generali</h2>
+    <div class="form-group">
+      <label for="costo-attuale">Costo Attuale Energia (€):</label>
+      <input type="number" id="costo-attuale" placeholder="Inserisci il costo per kWh">
+    </div>
+    <div class="form-group">
+      <label for="consumo-attuale">Consumo Attuale (kWh):</label>
+      <input type="number" id="consumo-attuale" placeholder="Inserisci il consumo mensile">
+    </div>
+    <div class="form-group">
+      <label for="consumo-annuale">Consumo Annuale Attuale (kWh):</label>
+      <input type="number" id="consumo-annuale" placeholder="Inserisci il consumo annuale">
+    </div>
+    <div class="button-container">
+      <button id="prosegui-fase2" disabled>Prosegui</button>
+    </div>
+  </div>
 
-        // Funzione per mostrare il passo successivo
-        function mostraStep(step) {
-            const allSteps = document.querySelectorAll('.section');
-            allSteps.forEach(s => s.classList.add('hidden'));  // Nasconde tutti i passi
-            document.getElementById(step).classList.remove('hidden');  // Mostra il passo selezionato
-        }
+  <div class="container hidden" id="fase3">
+    <h2>Calcolo delle Offerte</h2>
+    <h3>Offerta Flex</h3>
+    <div class="form-group">
+      <label for="pun-mese">PUN del mese (€):</label>
+      <input type="number" id="pun-mese" placeholder="Inserisci il PUN del mese">
+    </div>
+    <div class="form-group">
+      <label for="spread">Spread con Fastweb (€):</label>
+      <input type="number" id="spread" placeholder="Inserisci lo spread Fastweb">
+    </div>
+    <div class="form-group">
+      <label for="costo-gestione">Costo di Commercializzazione (€):</label>
+      <input type="number" id="costo-gestione" placeholder="Inserisci il costo di gestione">
+    </div>
+    <h3>Offerta Fix</h3>
+    <div class="form-group">
+      <label for="pun-fisso">PUN Fisso Fastweb (€):</label>
+      <input type="number" id="pun-fisso" placeholder="Inserisci il PUN fisso Fastweb">
+    </div>
+    <div class="button-container">
+      <button id="calcola-offerta">Calcola</button>
+    </div>
+  </div>
 
-        // Funzione per calcolare i costi
-        function calcolaCosti() {
-            costoEnergiaAttuale = parseFloat(document.getElementById('costoEnergiaAttuale').value);
-            punAttuale = parseFloat(document.getElementById('punAttuale').value);
-            spreadAttuale = parseFloat(document.getElementById('spreadAttuale').value);
-            consumoAttuale = parseFloat(document.getElementById('consumoAttuale').value);
-            consumoAnnualeAttuale = parseFloat(document.getElementById('consumoAnnualeAttuale').value);
+  <div class="container hidden" id="risultati">
+    <h2>Risultato Finale</h2>
+    <div class="result-box">
+      <p id="offerta-conveniente"></p>
+      <p id="risparmio-bolletta"></p>
+      <p id="risparmio-annuale"></p>
+      <p id="motivazione"></p>
+    </div>
+  </div>
 
-            // Aggiungi il 10% di margine errore per il consumo
-            consumoAttuale *= 1.1;
-            consumoAnnualeAttuale *= 1.1;
+  <script>
+    // Schermata iniziale
+    document.getElementById('start-btn').addEventListener('click', function() {
+      document.getElementById('welcome-screen').classList.add('hidden');
+      document.getElementById('fase1').classList.remove('hidden');
+    });
 
-            // Condizioni per Non Residente
-            const costoExtraNonResidente = (tipoUtente === 'nonResidente') ? 12 : 0;
+    // Fase 1 - Selezione Tipo Utente e Tipo di Bolletta
+    document.getElementById('bolletta').addEventListener('change', checkFase1);
+    document.getElementById('utente').addEventListener('change', checkFase1);
 
-            // Costo Offerta Flex
-            const costoCommercializzazioneFlex = tipoBolletta === 'bimestrale' ? 5 * 2 : 5;
-            const costoFlex = (consumoAttuale * (costoEnergiaAttuale + spreadAttuale)) + costoCommercializzazioneFlex + costoExtraNonResidente;
+    function checkFase1() {
+      const bolletta = document.getElementById('bolletta').value;
+      const utente = document.getElementById('utente').value;
+      const proseguiButton = document.getElementById('prosegui-fase1');
+      const errorMessage = document.getElementById('error-message');
 
-            // Costo Offerta Fix
-            const costoCommercializzazioneFix = tipoBolletta === 'bimestrale' ? 6 * 2 : 6;
-            const costoFix = (consumoAttuale * punAttuale) + costoCommercializzazioneFix + costoExtraNonResidente;
+      if (bolletta && utente) {
+        proseguiButton.disabled = false;
+        errorMessage.classList.add('hidden');
+      } else {
+        proseguiButton.disabled = true;
+        errorMessage.classList.remove('hidden');
+      }
+    }
 
-            // Costo Offerta Light
-            const costoFissoLight = tipoBolletta === 'bimestrale' ? 80 : 40;
-            const kwhExtraLight = consumoAnnualeAttuale > 1500 ? (consumoAnnualeAttuale - 1500) * 0.45 : 0;
-            const costoLight = costoFissoLight + kwhExtraLight + costoExtraNonResidente;
+    document.getElementById('prosegui-fase1').addEventListener('click', function() {
+      document.getElementById('fase1').classList.add('hidden');
+      document.getElementById('fase2').classList.remove('hidden');
+    });
 
-            // Costo Offerta Full
-            const costoFissoFull = tipoBolletta === 'bimestrale' ? 120 : 60;
-            const kwhExtraFull = consumoAnnualeAttuale > 2500 ? (consumoAnnualeAttuale - 2500) * 0.45 : 0;
-            const costoFull = costoFissoFull + kwhExtraFull + costoExtraNonResidente;
+    // Fase 2 - Dati Generali
+    document.getElementById('costo-attuale').addEventListener('input', checkFase2);
+    document.getElementById('consumo-attuale').addEventListener('input', checkFase2);
+    document.getElementById('consumo-annuale').addEventListener('input', checkFase2);
 
-            // Costo Offerta Maxi
-            const costoFissoMaxi = tipoBolletta === 'bimestrale' ? 180 : 90;
-            const kwhExtraMaxi = consumoAnnualeAttuale > 4000 ? (consumoAnnualeAttuale - 4000) * 0.45 : 0;
-            const costoMaxi = costoFissoMaxi + kwhExtraMaxi + costoExtraNonResidente;
+    function checkFase2() {
+      const costoAttuale = document.getElementById('costo-attuale').value;
+      const consumoAttuale = document.getElementById('consumo-attuale').value;
+      const consumoAnnuale = document.getElementById('consumo-annuale').value;
+      const proseguiButton = document.getElementById('prosegui-fase2');
 
-            // Confronto con la bolletta attuale
-            const costoAttualeAnnuale = costoEnergiaAttuale * consumoAnnualeAttuale;
-            const risparmioBolleta = costoAttualeAnnuale - Math.min(costoFlex, costoFix, costoLight, costoFull, costoMaxi);
-            const risparmioAnnuale = risparmioBolleta;
+      if (costoAttuale && consumoAttuale && consumoAnnuale) {
+        proseguiButton.disabled = false;
+      } else {
+        proseguiButton.disabled = true;
+      }
+    }
 
-            // Aggiornamento Risultati
-            document.getElementById('risparmioBolleta').innerText = `€ ${risparmioBolleta.toFixed(2)}`;
-            document.getElementById('risparmioAnnuale').innerText = `€ ${risparmioAnnuale.toFixed(2)}`;
-            document.getElementById('prezzoKwAttuale').innerText = `€ ${costoEnergiaAttuale.toFixed(2)} per kWh`;
-            document.getElementById('prezzoKwOfferta').innerText = `€ ${(Math.min(costoFlex, costoFix, costoLight, costoFull, costoMaxi) / consumoAttuale).toFixed(2)} per kWh`;
+    document.getElementById('prosegui-fase2').addEventListener('click', function() {
+      document.getElementById('fase2').classList.add('hidden');
+      document.getElementById('fase3').classList.remove('hidden');
+    });
 
-            const motivazione = `Il risparmio è dovuto al confronto tra il costo della tua attuale bolletta e l'offerta più conveniente (Flex, Fix, Light, Full o Maxi).`;
-            document.getElementById('motivazioneRisparmio').innerText = motivazione;
+    // Fase 3 - Calcolo delle Offerte
+    document.getElementById('calcola-offerta').addEventListener('click', function() {
+      const punMese = parseFloat(document.getElementById('pun-mese').value);
+      const spread = parseFloat(document.getElementById('spread').value);
+      const costoGestione = parseFloat(document.getElementById('costo-gestione').value);
+      const punFisso = parseFloat(document.getElementById('pun-fisso').value);
+      const bolletta = document.getElementById('bolletta').value;
+      const utente = document.getElementById('utente').value;
 
-            mostraStep('result');
-        }
+      // Calcolo Offerta Flex
+      let costoFlex = (punMese + spread) * parseFloat(document.getElementById('consumo-attuale').value) + costoGestione;
+      // Se bimestrale, moltiplicare per 2
+      if (bolletta === 'bimestrale') {
+        costoGestione *= 2;
+      }
+      if (utente === 'non-residente') {
+        costoFlex += 12; // Costo aggiuntivo per non residente
+      }
 
-        // Event Listeners
-        document.getElementById('startBtn').addEventListener('click', () => mostraStep('step2'));
-        document.getElementById('proseguiBtn').addEventListener('click', () => {
-            tipoBolletta = document.getElementById('tipoBolletta').value;
-            tipoUtente = document.getElementById('tipoUtente').value;
+      // Calcolo Offerta Fix
+      let costoFix = punFisso * parseFloat(document.getElementById('consumo-attuale').value) + costoGestione; if (utente === 'non-residente') { costoFix += 12; // Costo aggiuntivo per non residente }
+                                                                                                                                               
+  // Visualizza i risultati
+  let miglioreOfferta = 'Offerta Flex';
+  let miglioreCosto = costoFlex;
+  if (costoFix < miglioreCosto) {
+    miglioreOfferta = 'Offerta Fix';
+    miglioreCosto = costoFix;
+  }
 
-            if (tipoBolletta && tipoUtente) {
-                mostraStep('step3');
-            } else {
-                alert('Per favore, completa tutti i campi.');
-            }
-        });
-        document.getElementById('calcolaBtn').addEventListener('click', calcolaCosti);
-    </script>
-</body>
-</html>
+  document.getElementById('risultati').classList.remove('hidden');
+  document.getElementById('offerta-conveniente').textContent = `Offerta più conveniente: ${miglioreOfferta}`;
+  document.getElementById('risparmio-bolletta').textContent = `Risparmio a bolletta: €${(parseFloat(document.getElementById('costo-attuale').value) - miglioreCosto).toFixed(2)}`;
+  document.getElementById('risparmio-annuale').textContent = `Risparmio annuale: €${(parseFloat(document.getElementById('costo-attuale').value) * 12 - miglioreCosto * 12).toFixed(2)}`;
+  document.getElementById('motivazione').textContent = 'Motivazione del risparmio: La nostra offerta calcolata risulta la più economica in base ai tuoi parametri.';
+});
+</script> 
+</body> 
+</html> ```
