@@ -7,70 +7,104 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            padding: 20px;
+        }
+        h1, h3 {
+            color: yellow;
         }
         .hidden {
             display: none;
         }
+        .button {
+            background-color: yellow;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: orange;
+        }
+        .inputField {
+            margin-top: 10px;
+            padding: 8px;
+            width: 100%;
+            max-width: 300px;
+            font-size: 16px;
+            background-color: #444;
+            color: white;
+            border: 1px solid yellow;
+        }
         .result {
             margin-top: 20px;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 5px;
         }
-        label {
+        .result p {
+            margin: 10px 0;
+        }
+        .label {
             margin-top: 10px;
+            color: yellow;
         }
     </style>
 </head>
 <body>
     <h1>Benvenuto nel Simulatore di Offerta Energetica</h1>
-    <button id="startBtn">Inizia</button>
+    <button id="startBtn" class="button">Inizia</button>
 
     <div id="selectionSection" class="hidden">
-        <label for="billType">Tipo di bolletta:</label>
-        <select id="billType">
+        <label class="label" for="billType">Tipo di bolletta:</label>
+        <select id="billType" class="inputField">
             <option value="mensile">Mensile</option>
             <option value="bimestrale">Bimestrale</option>
         </select>
 
-        <label for="userType">Tipo di utente:</label>
-        <select id="userType">
+        <label class="label" for="userType">Tipo di utente:</label>
+        <select id="userType" class="inputField">
             <option value="residente">Residente</option>
             <option value="non_residente">Non Residente</option>
             <option value="partita_iva">Partita IVA</option>
         </select>
 
-        <label for="currentCost">Costo Attuale Energia (€):</label>
-        <input type="number" id="currentCost" required>
+        <label class="label" for="currentCost">Costo Attuale Energia (€):</label>
+        <input type="number" id="currentCost" class="inputField" required>
 
-        <label for="currentConsumption">Consumo Attuale (kWh):</label>
-        <input type="number" id="currentConsumption" required>
+        <label class="label" for="currentConsumption">Consumo Attuale (kWh):</label>
+        <input type="number" id="currentConsumption" class="inputField" required>
 
-        <label for="currentAnnualConsumption">Consumo Annuale Attuale (kWh):</label>
-        <input type="number" id="currentAnnualConsumption" required>
+        <label class="label" for="currentAnnualConsumption">Consumo Annuale Attuale (kWh):</label>
+        <input type="number" id="currentAnnualConsumption" class="inputField" required>
 
         <div id="flexSection" class="hidden">
             <h3>Inserisci i dati per il calcolo dell'offerta Flex</h3>
-            <label for="currentPUN">PUN della bolletta attuale:</label>
-            <input type="number" id="currentPUN" step="any" required>
+            <label class="label" for="currentPUN">PUN della bolletta attuale:</label>
+            <input type="number" id="currentPUN" class="inputField" step="any" required>
 
-            <label for="spread">Spread con Fastweb (€):</label>
-            <input type="number" id="spread" step="any" required>
+            <label class="label" for="spread">Spread con Fastweb (€):</label>
+            <input type="number" id="spread" class="inputField" step="any" required>
 
-            <label for="commercialCost">Costo di Commercializzazione Fastweb (€):</label>
-            <input type="number" id="commercialCost" required>
+            <label class="label" for="commercialCost">Costo di Commercializzazione Fastweb (€):</label>
+            <input type="number" id="commercialCost" class="inputField" required>
         </div>
 
         <div id="fixSection" class="hidden">
             <h3>Inserisci i dati per il calcolo dell'offerta Fix</h3>
-            <label for="fixedPUN">PUN Fisso Fastweb:</label>
-            <input type="number" id="fixedPUN" step="any" required>
+            <label class="label" for="fixedPUN">PUN Fisso Fastweb:</label>
+            <input type="number" id="fixedPUN" class="inputField" step="any" required>
 
-            <label for="fixedCommercialCost">Costo di Commercializzazione Fastweb:</label>
-            <input type="number" id="fixedCommercialCost" required>
+            <label class="label" for="fixedCommercialCost">Costo di Commercializzazione Fastweb:</label>
+            <input type="number" id="fixedCommercialCost" class="inputField" required>
         </div>
 
-        <button id="calculateBtn">Calcola</button>
+        <button id="calculateBtn" class="button">Calcola</button>
     </div>
 
-    <div id="resultSection" class="hidden">
+    <div id="resultSection" class="hidden result">
         <h3>Risultati della simulazione</h3>
         <div id="resultDetails"></div>
     </div>
